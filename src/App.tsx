@@ -1,35 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { observer } from 'mobx-react-lite';
+import { useEffect, useState } from 'react';
+import LocalViewStore from './stores/LocalStore';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+function Modal() {
+  return <div>The Modal</div>;
 }
 
-export default App
+const Page = observer(() => {
+  const [modalStore] = useState(() => new LocalViewStore('ModalViewStore'));
+
+  useEffect(
+    // stop writing to the store when component unmounted
+    () => () => modalStore.stopStore(),
+    [modalStore],
+  );
+
+  return (
+    <main>
+      <h1>Page title</h1>
+      <button onClick={modalStore.toggleModal} type="button">Toggle Modal</button>
+      {modalStore.modal.visibility ? <Modal /> : null}
+    </main>
+  );
+});
+
+function App() {
+  return <Page />;
+}
+
+export default App;
